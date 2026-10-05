@@ -64,7 +64,7 @@ class DataValidatorTest {
         // When
         dataValidator.validate(data);
 
-        assertThat(validObj.getValidationResult()).isNullOrEmpty();
+        assertThat(validObj.getValidationResult()).isNotNull().isEmpty();
     }
 
     @Test

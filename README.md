@@ -137,7 +137,9 @@ Validator<User> nameValidator = new ObjectValidator<>("name",
     List.of(CommonRules.required().withMessage("name.required_key")), 
     User::getName);
 
-engine.validate(user, context); // Passes the context with custom provider
+// 4. Pass the context to the engine
+DataValidator<User> engine = new DataValidator<>(List.of(nameValidator), context);
+engine.validate(user);
 ```
 
 ---
