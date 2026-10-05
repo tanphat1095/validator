@@ -78,7 +78,7 @@ public class DataValidator<E> {
                 totalResults.addAll(validationResult);
             }
         }
-        handleResult(e, totalResults);
+        handleResult(e, totalResults == null ? List.of() : totalResults);
         return e;
     }
 
