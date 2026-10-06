@@ -38,7 +38,7 @@ Add this to your project's `pom.xml`:
 <dependency>
     <groupId>io.github.tanphat1095</groupId>
     <artifactId>data-validator</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
