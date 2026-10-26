@@ -103,6 +103,21 @@ validatedStream.forEach(user -> {
 });
 ```
 
+**Parallel streams:** built-in rules are thread-safe. If your custom rules keep state (e.g. duplicate detection), use `ConcurrentValidationContext` and thread-safe collections with atomic operations:
+
+```java
+ValidationContext<String, Object> context = new ConcurrentValidationContext();
+context.put("seen_ids", ConcurrentHashMap.newKeySet());
+
+LongRuleValidator uniqueId = (value, ctx, field) -> {
+    Set<Long> seen = (Set<Long>) ctx.get("seen_ids");
+    // add() is atomic; avoid contains() followed by add()
+    return seen.add(value) ? null : ValidationError.fail(field, "Duplicate ID: " + value);
+};
+
+engine.validate(userStream.parallel());
+```
+
 ### 3. Dynamic Map Validation (CSV/Excel style)
 
 ```java

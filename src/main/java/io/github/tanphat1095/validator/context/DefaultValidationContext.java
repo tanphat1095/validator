@@ -21,6 +21,10 @@ import io.github.tanphat1095.validator.message.MessageProvider;
 import java.util.HashMap;
 
 /**
+ * Default {@link ValidationContext} backed by a {@link HashMap}. It is not thread-safe:
+ * when rules write to the context while validating a parallel stream,
+ * use {@link ConcurrentValidationContext} instead.
+ *
  * @author Le Tan Phat
  * @since 1.0.0
  */

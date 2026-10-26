@@ -59,6 +59,10 @@ public class DataValidator<E> {
     /**
      * Supports true lazy loading by wrapping the validation logic into a Stream pipeline.
      * Use this for extremely large datasets (10M+ records) where you don't want to load everything into RAM.
+     * <p>
+     * For a parallel stream, stateful rules must be thread-safe: use
+     * {@link io.github.tanphat1095.validator.context.ConcurrentValidationContext} if rules write to the context,
+     * and keep shared state in concurrent collections with atomic operations.
      */
     public Stream<E> validate(Stream<E> dataStream) {
         if (dataStream == null) return Stream.empty();
