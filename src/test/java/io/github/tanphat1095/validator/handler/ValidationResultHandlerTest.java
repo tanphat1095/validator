@@ -103,6 +103,17 @@ class ValidationResultHandlerTest {
         assertThat(handler).isPresent().contains(customHandler);
     }
 
+    @Test
+    void factoryShouldReturnSameResultOnRepeatedLookups() {
+        ValidationResultHandlerFactory factory = new ValidationResultHandlerFactory();
+        for (int i = 0; i < 3; i++) {
+            assertThat(factory.getHandler(HashMap.class)).isPresent().get().isInstanceOf(MapValidationResultHandler.class);
+            assertThat(factory.getHandler(MockValidatable.class)).isPresent().get().isInstanceOf(DefaultValidationResultHandler.class);
+            assertThat(factory.getHandler(String.class)).isEmpty();
+            assertThat(factory.getHandler(null)).isEmpty();
+        }
+    }
+
     static class MockValidatable implements Validatable {
         private List<ValidationError> results;
 

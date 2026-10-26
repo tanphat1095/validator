@@ -17,6 +17,9 @@
 package io.github.tanphat1095.validator.message;
 
 import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Le Tan Phat
@@ -24,8 +27,26 @@ import java.text.MessageFormat;
  */
 public class DefaultMessageProvider implements MessageProvider{
 
+    // ponytail: no eviction, templates past the cap are parsed on every call; switch to an LRU if apps build many dynamic templates
+    private static final int MAX_CACHED_TEMPLATES = 1024;
+    private static final Map<TemplateKey, MessageFormat> FORMAT_CACHE = new ConcurrentHashMap<>();
+
+    private record TemplateKey(String template, Locale locale) {}
+
     @Override
     public String getMessage(String template, Object... args) {
-        return template == null ? null : MessageFormat.format(template, args);
+        if (template == null) return null;
+        // Same locale as MessageFormat.format(String, Object...)
+        Locale locale = Locale.getDefault(Locale.Category.FORMAT);
+        TemplateKey key = new TemplateKey(template, locale);
+        MessageFormat format = FORMAT_CACHE.get(key);
+        if (format == null) {
+            format = new MessageFormat(template, locale);
+            if (FORMAT_CACHE.size() < MAX_CACHED_TEMPLATES) {
+                FORMAT_CACHE.putIfAbsent(key, format);
+            }
+        }
+        // MessageFormat is not thread-safe, format on a private copy
+        return ((MessageFormat) format.clone()).format(args);
     }
 }

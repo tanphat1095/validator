@@ -18,7 +18,9 @@ package io.github.tanphat1095.validator.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Factory class for managing and providing ValidationResultHandlers.
@@ -28,6 +30,7 @@ import java.util.Optional;
  */
 public class ValidationResultHandlerFactory {
     private final List<ValidationResultHandler> handlers = new ArrayList<>();
+    private final Map<Class<?>, Optional<ValidationResultHandler>> handlerCache = new ConcurrentHashMap<>();
 
     public ValidationResultHandlerFactory() {
         this.handlers.add(new MapValidationResultHandler());
@@ -43,14 +46,21 @@ public class ValidationResultHandlerFactory {
 
     /**
      * Finds the first handler that supports the given class.
+     * The result is cached per class, so {@link ValidationResultHandler#support(Class)}
+     * is expected to depend only on the class.
      *
      * @param clazz the class of the object to be handled
      * @return an Optional containing the handler, or empty if none found
      */
     public Optional<ValidationResultHandler> getHandler(Class<?> clazz) {
         if (clazz == null) return Optional.empty();
-        return handlers.stream()
-                .filter(h -> h.support(clazz))
-                .findFirst();
+        Optional<ValidationResultHandler> handler = handlerCache.get(clazz);
+        if (handler == null) {
+            handler = handlers.stream()
+                    .filter(h -> h.support(clazz))
+                    .findFirst();
+            handlerCache.putIfAbsent(clazz, handler);
+        }
+        return handler;
     }
 }

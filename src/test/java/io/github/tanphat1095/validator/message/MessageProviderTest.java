@@ -24,8 +24,10 @@ import io.github.tanphat1095.validator.context.DefaultValidationContext;
 import io.github.tanphat1095.validator.context.ValidationContext;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Le Tan Phat
@@ -84,5 +86,57 @@ class MessageProviderTest {
     void defaultMessageProviderShouldHandleNullTemplate() {
         DefaultMessageProvider provider = new DefaultMessageProvider();
         assertThat(provider.getMessage(null, "some-arg")).isNull();
+    }
+
+    @Test
+    void defaultMessageProviderShouldMatchMessageFormatOnRepeatedCalls() {
+        DefaultMessageProvider provider = new DefaultMessageProvider();
+        Object[][] cases = {
+                {"Field {0} should not more than {1} characters", new Object[]{"name", 1000}},
+                {"It''s {0} at {1,number,#.##}", new Object[]{"price", 3.14159}},
+                {"No args here", new Object[]{}},
+                {"Missing {0} and {1}", new Object[]{"one"}},
+                {"Null args {0}", null},
+        };
+        for (int i = 0; i < 3; i++) {
+            for (Object[] c : cases) {
+                String template = (String) c[0];
+                Object[] args = (Object[]) c[1];
+                assertThat(provider.getMessage(template, args)).isEqualTo(MessageFormat.format(template, args));
+            }
+        }
+    }
+
+    @Test
+    void defaultMessageProviderShouldFollowDefaultLocaleChanges() {
+        Locale original = Locale.getDefault(Locale.Category.FORMAT);
+        DefaultMessageProvider provider = new DefaultMessageProvider();
+        String template = "Value {0}";
+        try {
+            Locale.setDefault(Locale.Category.FORMAT, Locale.US);
+            assertThat(provider.getMessage(template, 1234.5)).isEqualTo("Value 1,234.5");
+            Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
+            assertThat(provider.getMessage(template, 1234.5)).isEqualTo("Value 1.234,5");
+        } finally {
+            Locale.setDefault(Locale.Category.FORMAT, original);
+        }
+    }
+
+    @Test
+    void defaultMessageProviderShouldStillRejectInvalidTemplate() {
+        DefaultMessageProvider provider = new DefaultMessageProvider();
+        for (int i = 0; i < 2; i++) {
+            assertThatThrownBy(() -> provider.getMessage("Broken {0", "x"))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Test
+    void defaultMessageProviderShouldBeThreadSafe() {
+        DefaultMessageProvider provider = new DefaultMessageProvider();
+        String template = "Field {0} has {1,number,integer} items";
+        java.util.stream.IntStream.range(0, 10_000).parallel().forEach(i ->
+                assertThat(provider.getMessage(template, "f" + i, i))
+                        .isEqualTo(MessageFormat.format(template, "f" + i, i)));
     }
 }
