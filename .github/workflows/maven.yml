@@ -10,7 +10,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main", "perf/performance-and-refactor" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
