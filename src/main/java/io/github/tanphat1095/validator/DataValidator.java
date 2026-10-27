@@ -80,6 +80,7 @@ public class DataValidator<E> {
                     totalResults = new ArrayList<>();
                 }
                 totalResults.addAll(validationResult);
+                if (target.failFast()) break;
             }
         }
         handleResult(e, totalResults == null ? List.of() : totalResults);

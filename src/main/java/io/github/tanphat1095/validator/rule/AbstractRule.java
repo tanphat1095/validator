@@ -30,6 +30,7 @@ import java.util.Optional;
 public abstract class AbstractRule<T, R extends AbstractRule<T, R>> implements RuleValidator<T> {
     protected String customMessage;
     protected String errorCode;
+    protected boolean failFast;
 
     @SuppressWarnings("unchecked")
     public R withMessage(String message) {
@@ -41,6 +42,22 @@ public abstract class AbstractRule<T, R extends AbstractRule<T, R>> implements R
     public R withErrorCode(String code) {
         this.errorCode = code;
         return (R) this;
+    }
+
+    /**
+     * Marks this rule as fail-fast: the remaining rules of the same field are skipped once it fails.
+     *
+     * @since 1.0.2
+     */
+    @SuppressWarnings("unchecked")
+    public R withFailFast() {
+        this.failFast = true;
+        return (R) this;
+    }
+
+    @Override
+    public boolean failFast() {
+        return failFast;
     }
 
     protected ValidationError fail(ValidationContext<?,?> context, String fieldName, String defaultTemplate, Object... args) {

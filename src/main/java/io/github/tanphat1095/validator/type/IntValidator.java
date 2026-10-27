@@ -44,6 +44,7 @@ public record IntValidator<E>(String targetName, List<IntRuleValidator> rules, T
                     results = new ArrayList<>();
                 }
                 results.add(res);
+                if (rule.failFast()) break;
             }
         }
         return results;

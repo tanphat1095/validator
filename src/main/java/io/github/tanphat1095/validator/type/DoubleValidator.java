@@ -44,6 +44,7 @@ public record DoubleValidator<E>(String targetName, List<DoubleRuleValidator> ru
                     results = new ArrayList<>();
                 }
                 results.add(res);
+                if (rule.failFast()) break;
             }
         }
         return results;

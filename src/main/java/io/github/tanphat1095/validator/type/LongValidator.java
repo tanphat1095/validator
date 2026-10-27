@@ -44,6 +44,7 @@ public record LongValidator<E>(String targetName, List<LongRuleValidator> rules,
                     results = new ArrayList<>();
                 }
                 results.add(res);
+                if (rule.failFast()) break;
             }
         }
         return results;

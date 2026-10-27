@@ -25,4 +25,32 @@ import io.github.tanphat1095.validator.ValidationError;
  */
 public interface LongRuleValidator {
     ValidationError validate(long value, ValidationContext<?,?> context, String fieldName);
+
+    /**
+     * If true, the remaining rules of the same field are skipped once this rule fails.
+     *
+     * @since 1.0.2
+     */
+    default boolean failFast() {
+        return false;
+    }
+
+    /**
+     * Wraps any rule, including a lambda, so that it is fail-fast.
+     *
+     * @since 1.0.2
+     */
+    static LongRuleValidator failFast(LongRuleValidator rule) {
+        return new LongRuleValidator() {
+            @Override
+            public ValidationError validate(long value, ValidationContext<?,?> context, String fieldName) {
+                return rule.validate(value, context, fieldName);
+            }
+
+            @Override
+            public boolean failFast() {
+                return true;
+            }
+        };
+    }
 }

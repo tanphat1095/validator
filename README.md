@@ -167,6 +167,20 @@ RuleValidator<String> emailRule = (value, context, fieldName) ->
     value.contains("@") ? null : ValidationError.fail(fieldName, "Invalid email format");
 ```
 
+### Fail-Fast
+By default every rule runs and all errors are collected. Fail-fast is opt-in:
+
+```java
+// Rule level: once this rule fails, the remaining rules of the same field are skipped
+CommonRules.required().withFailFast();
+RuleValidator.failFast((value, ctx, field) -> ...);   // also IntRuleValidator, LongRuleValidator, DoubleRuleValidator
+
+// Field level: once this field has errors, the remaining fields of the record are skipped
+Validator<User> name = Validator.failFast(new ObjectValidator<>("name", rules, User::getName));
+```
+
+Rules run in list order, so put fail-fast rules (e.g. `required`) first.
+
 ### Custom Handler (e.g., Logging Errors)
 ```java
 public class LogHandler implements ValidationResultHandler {

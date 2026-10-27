@@ -26,4 +26,32 @@ import io.github.tanphat1095.validator.ValidationError;
 @FunctionalInterface
 public interface RuleValidator<T> {
     ValidationError validate(T value, ValidationContext<?,?> context, String targetName);
+
+    /**
+     * If true, the remaining rules of the same field are skipped once this rule fails.
+     *
+     * @since 1.0.2
+     */
+    default boolean failFast() {
+        return false;
+    }
+
+    /**
+     * Wraps any rule, including a lambda, so that it is fail-fast.
+     *
+     * @since 1.0.2
+     */
+    static <T> RuleValidator<T> failFast(RuleValidator<T> rule) {
+        return new RuleValidator<>() {
+            @Override
+            public ValidationError validate(T value, ValidationContext<?,?> context, String targetName) {
+                return rule.validate(value, context, targetName);
+            }
+
+            @Override
+            public boolean failFast() {
+                return true;
+            }
+        };
+    }
 }

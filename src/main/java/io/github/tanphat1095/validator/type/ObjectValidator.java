@@ -44,6 +44,7 @@ public record ObjectValidator<T, E>(String targetName, List<RuleValidator<T>> ru
                     results = new ArrayList<>();
                 }
                 results.add(res);
+                if (rule.failFast()) break;
             }
         }
         return results;

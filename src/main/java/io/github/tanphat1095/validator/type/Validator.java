@@ -29,4 +29,32 @@ import java.util.List;
  */
 public interface Validator<E> {
     List<ValidationError> validate(E data, ValidationContext<?,?> context);
+
+    /**
+     * If true, the remaining validators of the same record are skipped once this one returns errors.
+     *
+     * @since 1.0.2
+     */
+    default boolean failFast() {
+        return false;
+    }
+
+    /**
+     * Wraps any validator so that it is fail-fast.
+     *
+     * @since 1.0.2
+     */
+    static <E> Validator<E> failFast(Validator<E> validator) {
+        return new Validator<>() {
+            @Override
+            public List<ValidationError> validate(E data, ValidationContext<?,?> context) {
+                return validator.validate(data, context);
+            }
+
+            @Override
+            public boolean failFast() {
+                return true;
+            }
+        };
+    }
 }
