@@ -16,7 +16,6 @@
 
 package io.github.tanphat1095.validator.common.rule;
 
-import lombok.AllArgsConstructor;
 import io.github.tanphat1095.validator.context.ValidationContext;
 import io.github.tanphat1095.validator.ValidationError;
 import io.github.tanphat1095.validator.rule.AbstractRule;
@@ -25,10 +24,13 @@ import io.github.tanphat1095.validator.rule.AbstractRule;
  * @author Le Tan Phat
  * @since 1.0.0
  */
-@AllArgsConstructor
 public class RuleMaxStringLength extends AbstractRule<String, RuleMaxStringLength> {
 
     private final int maxLength;
+
+    public RuleMaxStringLength(int maxLength) {
+        this.maxLength = maxLength;
+    }
 
     @Override
     public ValidationError validate(String value, ValidationContext<?,?> context, String targetName) {

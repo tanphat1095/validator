@@ -47,6 +47,7 @@ public abstract class AbstractRule<T, R extends AbstractRule<T, R>> implements R
     /**
      * Marks this rule as fail-fast: the remaining rules of the same field are skipped once it fails.
      *
+     * @return this rule
      * @since 1.0.2
      */
     @SuppressWarnings("unchecked")

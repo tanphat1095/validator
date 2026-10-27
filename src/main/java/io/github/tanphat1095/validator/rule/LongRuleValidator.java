@@ -29,6 +29,7 @@ public interface LongRuleValidator {
     /**
      * If true, the remaining rules of the same field are skipped once this rule fails.
      *
+     * @return whether this rule is fail-fast
      * @since 1.0.2
      */
     default boolean failFast() {
@@ -38,6 +39,8 @@ public interface LongRuleValidator {
     /**
      * Wraps any rule, including a lambda, so that it is fail-fast.
      *
+     * @param rule the rule to wrap
+     * @return a fail-fast rule delegating to the given one
      * @since 1.0.2
      */
     static LongRuleValidator failFast(LongRuleValidator rule) {

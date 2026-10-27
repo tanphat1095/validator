@@ -33,6 +33,7 @@ public interface Validator<E> {
     /**
      * If true, the remaining validators of the same record are skipped once this one returns errors.
      *
+     * @return whether this validator is fail-fast
      * @since 1.0.2
      */
     default boolean failFast() {
@@ -42,6 +43,9 @@ public interface Validator<E> {
     /**
      * Wraps any validator so that it is fail-fast.
      *
+     * @param <E> the data type
+     * @param validator the validator to wrap
+     * @return a fail-fast validator delegating to the given one
      * @since 1.0.2
      */
     static <E> Validator<E> failFast(Validator<E> validator) {

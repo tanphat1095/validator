@@ -425,9 +425,6 @@ class DataValidatorTest {
     }
 
 
-    @lombok.Getter
-    @lombok.Setter
-    @lombok.AllArgsConstructor
     static class TestObject implements Validatable {
         private String name;
         private int age;
@@ -443,5 +440,15 @@ class DataValidatorTest {
             this.id = id;
             this.price = price;
         }
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public int getAge() { return age; }
+        public void setAge(int age) { this.age = age; }
+        public long getId() { return id; }
+        public double getPrice() { return price; }
+
+        @Override public List<ValidationError> getValidationResult() { return validationResult; }
+        @Override public void setValidationResult(List<ValidationError> validationResult) { this.validationResult = validationResult; }
     }
 }
